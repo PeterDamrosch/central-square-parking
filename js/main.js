@@ -20,7 +20,7 @@ var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x
 // Initialize map
 
 var map = new L.Map("map", {center: [42.36531, -71.10314], zoom: 17})
-    .addLayer(CartoDB_Positron);
+    .addLayer(Hydda_Full);
 
 
 var svg = d3.select(map.getPanes().overlayPane).append("svg"),
@@ -41,6 +41,34 @@ L.control.layers(baseLayers, null, {position: 'topleft'}).addTo(map);
 var good = "#00853F";
 var medium = "#FDEF42";
 var bad = "#E31B23";
+
+// Define colors
+
+var colors1 = {
+    "good": "#00853F",
+    "medium": "#FDEF42",
+    "bad": "#E31B23"
+}
+
+var colors2 = {
+    "good": "#8c96c6",
+    "medium": "#88419d",
+    "bad": "#4d004b"
+}
+
+var colors3 = {
+    "good": "#02B24B",
+    "medium": "9400FF",
+    "bad": "FFAA19"
+}
+
+var colors4 = {
+    "good": "#1abc9c",
+    "medium": "#9b59b6",
+    "bad": "#e74c3c"
+}
+
+var mainColor = colors1;
 
 
 function createMap(data) {
@@ -140,11 +168,11 @@ function createMap(data) {
             var average = totalCountableCars / (numberOfPasses * d.properties.Meters);
 
             if (average <= 0.75) {
-                return good;
+                return mainColor.good;
             } else if (average > 0.75 && average <= 0.90) {
-                return medium;
+                return mainColor.medium;
             } else if (average > 0.90) {
-                return bad;
+                return mainColor.bad;
             }
         })
     }
