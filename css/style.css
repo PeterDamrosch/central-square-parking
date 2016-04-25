@@ -78,6 +78,7 @@ path {
     font-family: 'Open Sans', Helvetica, sans-serif;
     font-size: 14px;
     padding: 6px 8px;
+    margin: 40px;
     background: white;
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
