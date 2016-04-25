@@ -73,16 +73,21 @@ path {
 }
 
 .legend {
-    line-height: 18px;
     color: #333333;
     font-family: 'Open Sans', Helvetica, sans-serif;
     font-size: 14px;
     padding: 6px 8px;
-    margin: 40px;
+    line-height: 22px;
     background: white;
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
+}
+
+#title{
+    line-height: 18px;
+    text-align: center;
+    margin: 6px 0px
 }
 
 .legend i {
@@ -90,6 +95,7 @@ path {
     height: 18px;
     float: left;
     margin-right: 8px;
+    margin-top: 2px;
     line-height: 22px;
 }
 

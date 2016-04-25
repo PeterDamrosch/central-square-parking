@@ -33,15 +33,11 @@ var baseLayers = {
     "Hydda": Hydda_Full
 };
 
-var dataLayers = {
-    "Blocks": svg
-}
-
 // Toggle baselayers - Good tutorial that explains this on leafletjs.com
-L.control.layers(baseLayers, dataLayers, {position: 'topleft'}).addTo(map);
-
+L.control.layers(baseLayers, null, {position: 'topleft'}).addTo(map);
 
 // Style globals - could do this with classes in CSS
+
 var good = "#00853F";
 var medium = "#FDEF42";
 var bad = "#E31B23";
@@ -50,10 +46,12 @@ var bad = "#E31B23";
 function createMap(data) {
 
     // Mike Bostock transformation
+
     var transform = d3.geo.transform({point: projectPoint}),
         path = d3.geo.path().projection(transform);
 
     // Create paths
+
     var feature = g.selectAll("path")
         .data(data.features);
 
@@ -62,6 +60,7 @@ function createMap(data) {
         .attr("class", "block");
 
     // Mike Bostock - reset leaflet view
+
     map.on("viewreset", reset);
     reset();
 
@@ -88,6 +87,7 @@ function createMap(data) {
     }
 
     //Create a Legend - from Mike Foster's tutorial on DUSPviz
+
     // Create Leaflet Control Object for Legend
     var legend = L.control({position: 'topright'});
 
@@ -96,19 +96,20 @@ function createMap(data) {
 
         // Create Div Element and Populate it with HTML
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<b>Parking Availability</b><br/>';
-        div.innerHTML += '<b>In Central Square</b><br/>';
+        div.innerHTML += '<div id="title"><b>Central Square Parking Survey<br/><small>4/14-4/16</div>';
         div.innerHTML += 'Avg. occupancy<br/>';
         div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
         div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
         div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
+        div.innerHTML += 'Day<br/>';
         div.innerHTML += '<input type="checkbox" id="checkThu" name="radio" checked="checked"><label for="checkThu" class="buttons">Thu</label>';
         div.innerHTML += '<input type="checkbox" id="checkFri" name="radio" checked="checked"><label for="checkFri" class="buttons">Fri</label>';
         div.innerHTML += '<input type="checkbox" id="checkSat" name="radio" checked="checked"><label for="checkSat" class="buttons">Sat</label></b><br/>';
+        div.innerHTML += 'Time<br/>';
         div.innerHTML += '<input type="checkbox" id="check4" name="radio" checked="checked"><label for="check4" class="buttons">4PM</label>';
-        div.innerHTML += '<input type="checkbox" id="check6" name="radio" checked="checked"><label for="check6" class="buttons">6PM</label></b><br/>';
         div.innerHTML += '<input type="checkbox" id="check5" name="radio" checked="checked"><label for="check5" class="buttons">5PM</label>';
-        div.innerHTML += '<input type="checkbox" id="check7" name="radio" checked="checked"><label for="check7" class="buttons">7PM</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="check6" name="radio" checked="checked"><label for="check6" class="buttons">6PM</label>';
+        div.innerHTML += '<input type="checkbox" id="check7" name="radio" checked="checked"><label for="check7" class="buttons">7PM</label>';
 
         // Return the Legend div containing the HTML content
         return div;
@@ -118,6 +119,7 @@ function createMap(data) {
     legend.addTo(map);
 
     // Set Styling
+
     function setStyle(timeList, dateList) {
         // Get total number of passes from the days and times, for use in computing the average
         if (timeList.length == 0 || dateList.length == 0)
@@ -149,6 +151,7 @@ function createMap(data) {
     setStyle([4,5,6,7],["Thursday", "Friday", "Saturday"]);
 
     // JQuery Buttons
+
     $(document).ready(function(){
         // Check button values
         function checkButtons() {
@@ -209,6 +212,7 @@ function createMap(data) {
 }
 
 // Load CSV
+
 d3.json("data/Results4_JSON.json", function(error, meterCount) {
     if (error) throw error;
     for (i=0; i < meterCount.length; i++) {
@@ -218,7 +222,7 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
     }
     console.log(meterCount);
 
-    // Load Map
+    // Load block shapes GeoJSON
 
     d3.json("data/MeteredBlocks4_GEOJSON.geojson", function(error, dataset) {
         if (error) throw error;
