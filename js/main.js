@@ -22,6 +22,10 @@ var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x
 var map = new L.Map("map", {center: [42.36531, -71.10314], zoom: 17})
     .addLayer(CartoDB_Positron);
 
+
+var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+    g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
 // Baselayer control for map
 var baseLayers = {
     "Streets": CartoDB_Positron,
@@ -29,17 +33,11 @@ var baseLayers = {
     "Hydda": Hydda_Full
 };
 
+// Toggle baselayers - Good tutorial that explains this on leafletjs.com
 L.control.layers(baseLayers, null, {position: 'topleft'}).addTo(map);
 
-// Global Zoomlevel for Map
+// Style globals - could do this with classes in CSS
 
-var zoomLevel = 17;
-
-var svg = d3.select(map.getPanes().overlayPane).append("svg"),
-    g = svg.append("g").attr("class", "leaflet-zoom-hide");
-
-
-// Style globals
 var good = "#00853F";
 var medium = "#FDEF42";
 var bad = "#E31B23";
@@ -60,25 +58,6 @@ function createMap(data) {
     // Enter paths - styling coming at the end with the buttons
     feature.enter().append("path")
         .attr("class", "block");
-
-    // Style paths - default TotalAvg, later JQuery clicks will activate other time-based styles
-
-    function setStyle(time) {
-        feature.style("fill", function (d) {
-            if (d.properties[time] <= 0.75) {
-                return good;
-            } else if (d.properties[time] > 0.75 && d.properties[time] <= 0.90) {
-                return medium;
-            } else if (d.properties[time] > 0.90) {
-                return bad;
-            }
-        })
-    }
-
-    /* Commenting this out for a second
-    setStyle("TotalAvg");
-    */
-
 
     // Mike Bostock - reset leaflet view
 
@@ -107,7 +86,8 @@ function createMap(data) {
         this.stream.point(point.x, point.y);
     }
 
-    //Create a Legend - from Mike Foster's Tutorial on DUSPviz
+    //Create a Legend - from Mike Foster's tutorial on DUSPviz
+
     // Create Leaflet Control Object for Legend
     var legend = L.control({position: 'topright'});
 
@@ -116,19 +96,20 @@ function createMap(data) {
 
         // Create Div Element and Populate it with HTML
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<b>Parking Availability</b><br />';
-        div.innerHTML += '<b>In Central Square</b><br />';
-        div.innerHTML += 'Avg. occupancy/area<br />';
+        div.innerHTML += '<div id="title"><b>Central Square Parking Survey<br/><small>4/14-4/16</div>';
+        div.innerHTML += 'Avg. occupancy<br/>';
         div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
         div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
         div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
+        div.innerHTML += 'Day<br/>';
         div.innerHTML += '<input type="checkbox" id="checkThu" name="radio" checked="checked"><label for="checkThu" class="buttons">Thu</label>';
         div.innerHTML += '<input type="checkbox" id="checkFri" name="radio" checked="checked"><label for="checkFri" class="buttons">Fri</label>';
         div.innerHTML += '<input type="checkbox" id="checkSat" name="radio" checked="checked"><label for="checkSat" class="buttons">Sat</label></b><br/>';
+        div.innerHTML += 'Time<br/>';
         div.innerHTML += '<input type="checkbox" id="check4" name="radio" checked="checked"><label for="check4" class="buttons">4PM</label>';
-        div.innerHTML += '<input type="checkbox" id="check6" name="radio" checked="checked"><label for="check6" class="buttons">6PM</label></b><br/>';
         div.innerHTML += '<input type="checkbox" id="check5" name="radio" checked="checked"><label for="check5" class="buttons">5PM</label>';
-        div.innerHTML += '<input type="checkbox" id="check7" name="radio" checked="checked"><label for="check7" class="buttons">7PM</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="check6" name="radio" checked="checked"><label for="check6" class="buttons">6PM</label>';
+        div.innerHTML += '<input type="checkbox" id="check7" name="radio" checked="checked"><label for="check7" class="buttons">7PM</label>';
 
         // Return the Legend div containing the HTML content
         return div;
@@ -139,7 +120,7 @@ function createMap(data) {
 
     // Set Styling
 
-    function setStyle2(timeList, dateList) {
+    function setStyle(timeList, dateList) {
         // Get total number of passes from the days and times, for use in computing the average
         if (timeList.length == 0 || dateList.length == 0)
             return;
@@ -167,9 +148,10 @@ function createMap(data) {
             }
         })
     }
-    setStyle2([4,5,6,7],["Thursday", "Friday", "Saturday"]);
+    setStyle([4,5,6,7],["Thursday", "Friday", "Saturday"]);
 
     // JQuery Buttons
+
     $(document).ready(function(){
         // Check button values
         function checkButtons() {
@@ -201,7 +183,7 @@ function createMap(data) {
             console.log(timeList);
 
             // Call setStyle with the checked timeList
-            setStyle2(timeList, dateList)
+            setStyle(timeList, dateList)
         }
 
         // Call checkButtons each time a box is checked
@@ -230,6 +212,7 @@ function createMap(data) {
 }
 
 // Load CSV
+
 d3.json("data/Results4_JSON.json", function(error, meterCount) {
     if (error) throw error;
     for (i=0; i < meterCount.length; i++) {
@@ -239,54 +222,22 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
     }
     console.log(meterCount);
 
-    // Load Map
+    // Load block shapes GeoJSON
 
     d3.json("data/MeteredBlocks4_GEOJSON.geojson", function(error, dataset) {
         if (error) throw error;
 
-        // A quickly hacked together geojson with data from the csv, can delete much of it once setStyle2 is done
+        // Add count data to the GeoJSON
         for (i=0; i < dataset.features.length; i++) {
             dataset.features[i].properties.Name = +dataset.features[i].properties.Name;
-            dataset.features[i].properties.Total = 0;
-            dataset.features[i].properties.Meters = 0;
-            dataset.features[i].properties.Pre6 = 0;
-            dataset.features[i].properties.Post6 = 0;
-            dataset.features[i].properties.Hour4 = 0;
-            dataset.features[i].properties.Hour5 = 0;
-            dataset.features[i].properties.Hour6 = 0;
-            dataset.features[i].properties.Hour7 = 0;
-            dataset.features[i].properties.Observations = []
+            dataset.features[i].properties.Observations = [];
 
             for (k=0; k < meterCount.length; k++){
                 if (meterCount[k].BlockID == dataset.features[i].properties.Name) {
-                    dataset.features[i].properties.Observations.push(meterCount[k])
-                    dataset.features[i].properties.Total += meterCount[k].Cars;
+                    dataset.features[i].properties.Observations.push(meterCount[k]);
                     dataset.features[i].properties.Meters = meterCount[k].Meters;
-                    if (meterCount[k].Time == 4){
-                        dataset.features[i].properties.Pre6 += meterCount[k].Cars;
-                        dataset.features[i].properties.Hour4 += meterCount[k].Cars;
-                    } else if(meterCount[k].Time == 5) {
-                        dataset.features[i].properties.Pre6 += meterCount[k].Cars;
-                        dataset.features[i].properties.Hour5 += meterCount[k].Cars;
-                    } else if(meterCount[k].Time == 6) {
-                    dataset.features[i].properties.Post6 += meterCount[k].Cars;
-                    dataset.features[i].properties.Hour6 += meterCount[k].Cars;
-                    } else if(meterCount[k].Time == 7) {
-                        dataset.features[i].properties.Post6 += meterCount[k].Cars;
-                        dataset.features[i].properties.Hour7 += meterCount[k].Cars;
-                    }
                 }
             }
-
-            // Calculate the averages from the total
-
-            dataset.features[i].properties.TotalAvg = dataset.features[i].properties.Total / (12 * dataset.features[i].properties.Meters);
-            dataset.features[i].properties.Pre6Avg = dataset.features[i].properties.Pre6 / (6 * dataset.features[i].properties.Meters);
-            dataset.features[i].properties.Post6Avg = dataset.features[i].properties.Post6 / (6 * dataset.features[i].properties.Meters);
-            dataset.features[i].properties.Hour4Avg = dataset.features[i].properties.Hour4 / (3 * dataset.features[i].properties.Meters);
-            dataset.features[i].properties.Hour5Avg = dataset.features[i].properties.Hour5 / (3 * dataset.features[i].properties.Meters);
-            dataset.features[i].properties.Hour6Avg = dataset.features[i].properties.Hour6 / (3 * dataset.features[i].properties.Meters);
-            dataset.features[i].properties.Hour7Avg = dataset.features[i].properties.Hour7 / (3 * dataset.features[i].properties.Meters);
         }
 
         console.log(dataset);
