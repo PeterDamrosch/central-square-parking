@@ -101,7 +101,7 @@ function createMap(data) {
         div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
         div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
         div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
-        div.innerHTML += 'Day<br/>';
+        div.innerHTML += '<div class="subtitle">Day</div>';
         div.innerHTML += '<input type="checkbox" id="checkThu" name="radio" checked="checked"><label for="checkThu" class="buttons">Thu</label>';
         div.innerHTML += '<input type="checkbox" id="checkFri" name="radio" checked="checked"><label for="checkFri" class="buttons">Fri</label>';
         div.innerHTML += '<input type="checkbox" id="checkSat" name="radio" checked="checked"><label for="checkSat" class="buttons">Sat</label></b><br/>';

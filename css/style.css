@@ -87,7 +87,11 @@ path {
 #title{
     line-height: 18px;
     text-align: center;
-    margin: 6px 0px
+    margin: 2px 0px
+}
+
+.subtitle {
+    margin-top: 4px
 }
 
 .legend i {
