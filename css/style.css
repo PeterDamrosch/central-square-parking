@@ -38,8 +38,10 @@ h6 {
 
 /* - - - - MAP - - - -*/
 #map {
-    height: 650px;
-    width: 900px;
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:100%;
 }
 
 
@@ -74,6 +76,7 @@ path {
     line-height: 18px;
     color: #333333;
     font-family: 'Open Sans', Helvetica, sans-serif;
+    font-size: 14px;
     padding: 6px 8px;
     background: white;
     background: rgba(255,255,255,0.8);
@@ -96,8 +99,8 @@ path {
 }
 
 .legend p {
-    font-size: 12px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 24px;
     margin: 0;
 }
 
@@ -105,31 +108,9 @@ path {
     margin-right:8px;
 }
 
-.group1 {
-    stroke: #f1eef6;
-}
-.group2 {
-    stroke: #bdc9e1;
-}
-
-.group3 {
-    stroke: #74a9cf;
-}
-
-.group4 {
-    stroke: #2b8cbe;
-}
-
-.group5 {
-    stroke: #023858;
-}
-
 .highlightedLine {
     stroke: brown
 }
 
-.highlightedLine2 {
-    stroke: brown
-}
 
 

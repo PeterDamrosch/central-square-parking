@@ -1,15 +1,35 @@
 //////////////// MAP ////////////////
 
-// Initialize Leaflet Map
+// Base layers
 
 var CartoDB_Positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
     subdomains: 'abcd',
-    maxZoom: 19
+    maxZoom: 21
 });
+
+var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+});
+
+var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
+    attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+
+
+// Initialize map
 
 var map = new L.Map("map", {center: [42.36531, -71.10314], zoom: 17})
     .addLayer(CartoDB_Positron);
+
+// Baselayer control for map
+var baseLayers = {
+    "Streets": CartoDB_Positron,
+    "Satellite": Esri_WorldImagery,
+    "Hydda": Hydda_Full
+};
+
+L.control.layers(baseLayers, null, {position: 'topleft'}).addTo(map);
 
 // Global Zoomlevel for Map
 
@@ -19,7 +39,7 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
     g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
 
-// Style functions
+// Style globals
 var good = "#00853F";
 var medium = "#FDEF42";
 var bad = "#E31B23";
@@ -87,17 +107,17 @@ function createMap(data) {
     // Create Leaflet Control Object for Legend
     var legend = L.control({position: 'topright'});
 
-
     // Function that runs when legend is added to map
     legend.onAdd = function (map) {
 
         // Create Div Element and Populate it with HTML
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<b>Parking Usage</b><br />';
+        div.innerHTML += '<b>Parking Availability</b><br />';
+        div.innerHTML += '<b>In Central Square</b><br />';
         div.innerHTML += 'Avg. occupancy/area<br />';
-        div.innerHTML += '<i style="background: #00853F"></i><p><75%</p>';
-        div.innerHTML += '<i style="background: #FDEF42"></i><p>75%-90%</p>';
-        div.innerHTML += '<i style="background: #E31B23"></i><p>>90%</p>';
+        div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
+        div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
+        div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
         div.innerHTML += '<input type="radio" id="checkTotal" name="radio"><label for="checkTotal">Total</label></b><br/>';
         div.innerHTML += '<input type="radio" id="check4" name="radio"><label for="check4" class="buttons">4PM</label>';
         div.innerHTML += '<input type="radio" id="check5" name="radio"><label for="check5" class="buttons">5PM</label></b><br/>';
@@ -106,8 +126,6 @@ function createMap(data) {
 
         // Return the Legend div containing the HTML content
         return div;
-
-
     };
 
     // Add Legend to Map
@@ -202,4 +220,3 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
         createMap(dataset)
     });
 });
-
