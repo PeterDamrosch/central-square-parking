@@ -74,7 +74,37 @@ function createMap(data) {
             }
         })
     }
+
+    /* Commenting this out for a second
     setStyle("TotalAvg");
+    */
+
+    function setStyle2(timeList, dateList) {
+        // Get total number of passes from the days and times, for use in computing the average
+        var numberOfPasses = timeList.length * dateList.length;
+
+        feature.style("fill", function (d) {
+            var countableObservations = d.properties.Observations.filter(
+                function(e) {return timeList.indexOf(e.Time) > -1 && dateList.indexOf(e.Date) > -1}
+            );
+
+            var totalCountableCars = 0;
+            for (i=0; i < countableObservations.length; i++){
+                totalCountableCars += countableObservations[i].Cars
+            }
+
+            var average = totalCountableCars / (numberOfPasses * d.properties.Meters);
+
+            if (average <= 0.75) {
+                return good;
+            } else if (average > 0.75 && average <= 0.90) {
+                return medium;
+            } else if (average > 0.90) {
+                return bad;
+            }
+        })
+    }
+    setStyle2([4,5,6,7],["Thursday", "Friday", "Saturday"])
 
     // Mike Bostock - reset leaflet view
 
@@ -118,11 +148,10 @@ function createMap(data) {
         div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
         div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
         div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
-        div.innerHTML += '<input type="radio" id="checkTotal" name="radio"><label for="checkTotal">Total</label></b><br/>';
-        div.innerHTML += '<input type="radio" id="check4" name="radio"><label for="check4" class="buttons">4PM</label>';
-        div.innerHTML += '<input type="radio" id="check5" name="radio"><label for="check5" class="buttons">5PM</label></b><br/>';
-        div.innerHTML += '<input type="radio" id="check6" name="radio"><label for="check6" class="buttons">6PM</label>';
-        div.innerHTML += '<input type="radio" id="check7" name="radio"><label for="check7" class="buttons">7PM</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="check4" name="radio"><label for="check4" class="buttons">4PM</label>';
+        div.innerHTML += '<input type="checkbox" id="check5" name="radio"><label for="check5" class="buttons">5PM</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="check6" name="radio"><label for="check6" class="buttons">6PM</label>';
+        div.innerHTML += '<input type="checkbox" id="check7" name="radio"><label for="check7" class="buttons">7PM</label></b><br/>';
 
         // Return the Legend div containing the HTML content
         return div;
@@ -182,9 +211,11 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
             dataset.features[i].properties.Hour5 = 0;
             dataset.features[i].properties.Hour6 = 0;
             dataset.features[i].properties.Hour7 = 0;
+            dataset.features[i].properties.Observations = []
 
             for (k=0; k < meterCount.length; k++){
                 if (meterCount[k].BlockID == dataset.features[i].properties.Name) {
+                    dataset.features[i].properties.Observations.push(meterCount[k])
                     dataset.features[i].properties.Total += meterCount[k].Cars;
                     dataset.features[i].properties.Meters = meterCount[k].Meters;
                     if (meterCount[k].Time == 4){
