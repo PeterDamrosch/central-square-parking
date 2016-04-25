@@ -57,7 +57,7 @@ function createMap(data) {
     var feature = g.selectAll("path")
         .data(data.features);
 
-    // Enter paths
+    // Enter paths - styling coming at the end with the buttons
     feature.enter().append("path")
         .attr("class", "block");
 
@@ -74,7 +74,11 @@ function createMap(data) {
             }
         })
     }
+
+    /* Commenting this out for a second
     setStyle("TotalAvg");
+    */
+
 
     // Mike Bostock - reset leaflet view
 
@@ -118,11 +122,13 @@ function createMap(data) {
         div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
         div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
         div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
-        div.innerHTML += '<input type="radio" id="checkTotal" name="radio"><label for="checkTotal">Total</label></b><br/>';
-        div.innerHTML += '<input type="radio" id="check4" name="radio"><label for="check4" class="buttons">4PM</label>';
-        div.innerHTML += '<input type="radio" id="check5" name="radio"><label for="check5" class="buttons">5PM</label></b><br/>';
-        div.innerHTML += '<input type="radio" id="check6" name="radio"><label for="check6" class="buttons">6PM</label>';
-        div.innerHTML += '<input type="radio" id="check7" name="radio"><label for="check7" class="buttons">7PM</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="checkThu" name="radio" checked="checked"><label for="checkThu" class="buttons">Thu</label>';
+        div.innerHTML += '<input type="checkbox" id="checkFri" name="radio" checked="checked"><label for="checkFri" class="buttons">Fri</label>';
+        div.innerHTML += '<input type="checkbox" id="checkSat" name="radio" checked="checked"><label for="checkSat" class="buttons">Sat</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="check4" name="radio" checked="checked"><label for="check4" class="buttons">4PM</label>';
+        div.innerHTML += '<input type="checkbox" id="check6" name="radio" checked="checked"><label for="check6" class="buttons">6PM</label></b><br/>';
+        div.innerHTML += '<input type="checkbox" id="check5" name="radio" checked="checked"><label for="check5" class="buttons">5PM</label>';
+        div.innerHTML += '<input type="checkbox" id="check7" name="radio" checked="checked"><label for="check7" class="buttons">7PM</label></b><br/>';
 
         // Return the Legend div containing the HTML content
         return div;
@@ -131,27 +137,94 @@ function createMap(data) {
     // Add Legend to Map
     legend.addTo(map);
 
+    // Set Styling
+
+    function setStyle2(timeList, dateList) {
+        // Get total number of passes from the days and times, for use in computing the average
+        if (timeList.length == 0 || dateList.length == 0)
+            return;
+
+        var numberOfPasses = timeList.length * dateList.length;
+
+        feature.style("fill", function (d) {
+            var countableObservations = d.properties.Observations.filter(
+                function(e) {return timeList.indexOf(e.Time) > -1 && dateList.indexOf(e.Date) > -1}
+            );
+
+            var totalCountableCars = 0;
+            for (i=0; i < countableObservations.length; i++){
+                totalCountableCars += countableObservations[i].Cars
+            }
+
+            var average = totalCountableCars / (numberOfPasses * d.properties.Meters);
+
+            if (average <= 0.75) {
+                return good;
+            } else if (average > 0.75 && average <= 0.90) {
+                return medium;
+            } else if (average > 0.90) {
+                return bad;
+            }
+        })
+    }
+    setStyle2([4,5,6,7],["Thursday", "Friday", "Saturday"]);
+
     // JQuery Buttons
     $(document).ready(function(){
+        // Check button values
+        function checkButtons() {
+
+            // Add checked days to dateList
+            dateList = [];
+            var checkedThu = $('#checkThu').is(":checked");
+            var checkedFri = $('#checkFri').is(":checked");
+            var checkedSat = $('#checkSat').is(":checked");
+
+            if (checkedThu) {dateList.push("Thursday")}
+            if (checkedFri) {dateList.push("Friday")}
+            if (checkedSat) {dateList.push("Saturday")}
+            console.log(dateList)
+
+            // Add checked boxes to timeList
+
+            timeList = [];
+            var checked4 = $('#check4').is(":checked");
+            var checked5 = $('#check5').is(":checked");
+            var checked6 = $('#check6').is(":checked");
+            var checked7 = $('#check7').is(":checked");
+
+
+            if (checked4) {timeList.push(4)}
+            if (checked5) {timeList.push(5)}
+            if (checked6) {timeList.push(6)}
+            if (checked7) {timeList.push(7)}
+            console.log(timeList);
+
+            // Call setStyle with the checked timeList
+            setStyle2(timeList, dateList)
+        }
+
+        // Call checkButtons each time a box is checked
+        $("#checkThu").click(function() {
+            checkButtons();
+        });
+        $("#checkFri").click(function() {
+            checkButtons();
+        });
+        $("#checkSat").click(function() {
+            checkButtons();
+        });
         $("#check4").click(function() {
-            console.log("click4works");
-            setStyle("Hour4Avg")
+            checkButtons();
         });
         $("#check5").click(function() {
-            console.log("click5works");
-            setStyle("Hour5Avg")
+            checkButtons();
         });
         $("#check6").click(function() {
-            console.log("click6works");
-            setStyle("Hour6Avg")
+            checkButtons();
         });
         $("#check7").click(function() {
-            console.log("click7works");
-            setStyle("Hour7Avg")
-        })
-        $("#checkTotal").click(function() {
-            console.log("clickTotalworks");
-            setStyle("TotalAvg")
+            checkButtons();
         })
     });
 }
@@ -171,7 +244,7 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
     d3.json("data/MeteredBlocks4_GEOJSON.geojson", function(error, dataset) {
         if (error) throw error;
 
-        // A quickly hacked together geojson with data from the csv
+        // A quickly hacked together geojson with data from the csv, can delete much of it once setStyle2 is done
         for (i=0; i < dataset.features.length; i++) {
             dataset.features[i].properties.Name = +dataset.features[i].properties.Name;
             dataset.features[i].properties.Total = 0;
@@ -182,9 +255,11 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
             dataset.features[i].properties.Hour5 = 0;
             dataset.features[i].properties.Hour6 = 0;
             dataset.features[i].properties.Hour7 = 0;
+            dataset.features[i].properties.Observations = []
 
             for (k=0; k < meterCount.length; k++){
                 if (meterCount[k].BlockID == dataset.features[i].properties.Name) {
+                    dataset.features[i].properties.Observations.push(meterCount[k])
                     dataset.features[i].properties.Total += meterCount[k].Cars;
                     dataset.features[i].properties.Meters = meterCount[k].Meters;
                     if (meterCount[k].Time == 4){
