@@ -57,7 +57,7 @@ function createMap(data) {
     var feature = g.selectAll("path")
         .data(data.features);
 
-    // Enter paths
+    // Enter paths - styling coming at the end with the buttons
     feature.enter().append("path")
         .attr("class", "block");
 
@@ -79,32 +79,6 @@ function createMap(data) {
     setStyle("TotalAvg");
     */
 
-    function setStyle2(timeList, dateList) {
-        // Get total number of passes from the days and times, for use in computing the average
-        var numberOfPasses = timeList.length * dateList.length;
-
-        feature.style("fill", function (d) {
-            var countableObservations = d.properties.Observations.filter(
-                function(e) {return timeList.indexOf(e.Time) > -1 && dateList.indexOf(e.Date) > -1}
-            );
-
-            var totalCountableCars = 0;
-            for (i=0; i < countableObservations.length; i++){
-                totalCountableCars += countableObservations[i].Cars
-            }
-
-            var average = totalCountableCars / (numberOfPasses * d.properties.Meters);
-
-            if (average <= 0.75) {
-                return good;
-            } else if (average > 0.75 && average <= 0.90) {
-                return medium;
-            } else if (average > 0.90) {
-                return bad;
-            }
-        })
-    }
-    setStyle2([4,5,6,7],["Thursday", "Friday", "Saturday"])
 
     // Mike Bostock - reset leaflet view
 
@@ -160,26 +134,75 @@ function createMap(data) {
     // Add Legend to Map
     legend.addTo(map);
 
+    // Set Styling
+
+    function setStyle2(timeList, dateList) {
+        // Get total number of passes from the days and times, for use in computing the average
+        if (timeList.length == 0)
+            return;
+        
+        var numberOfPasses = timeList.length * dateList.length;
+
+        feature.style("fill", function (d) {
+            var countableObservations = d.properties.Observations.filter(
+                function(e) {return timeList.indexOf(e.Time) > -1 && dateList.indexOf(e.Date) > -1}
+            );
+
+            var totalCountableCars = 0;
+            for (i=0; i < countableObservations.length; i++){
+                totalCountableCars += countableObservations[i].Cars
+            }
+
+            var average = totalCountableCars / (numberOfPasses * d.properties.Meters);
+
+            if (average <= 0.75) {
+                return good;
+            } else if (average > 0.75 && average <= 0.90) {
+                return medium;
+            } else if (average > 0.90) {
+                return bad;
+            }
+        })
+    }
+    setStyle2([4,5,6,7],["Thursday", "Friday", "Saturday"])
+
     // JQuery Buttons
     $(document).ready(function(){
+        // Check button values
+        function checkButtons() {
+            timeList = [];
+            var checked4 = $('#check4').is(":checked");
+            var checked5 = $('#check5').is(":checked");
+            var checked6 = $('#check6').is(":checked");
+            var checked7 = $('#check7').is(":checked");
+
+            if (checked4) {timeList.push(4)}
+            if (checked5) {timeList.push(5)}
+            if (checked6) {timeList.push(6)}
+            if (checked7) {timeList.push(7)}
+            console.log(timeList);
+            setStyle2(timeList, ["Thursday", "Friday", "Saturday"])
+        }
+
         $("#check4").click(function() {
             console.log("click4works");
-            setStyle("Hour4Avg")
+            checkButtons();
         });
         $("#check5").click(function() {
             console.log("click5works");
-            setStyle("Hour5Avg")
+            checkButtons();
         });
         $("#check6").click(function() {
             console.log("click6works");
-            setStyle("Hour6Avg")
+            checkButtons();
         });
         $("#check7").click(function() {
             console.log("click7works");
-            setStyle("Hour7Avg")
+            checkButtons();
         })
         $("#checkTotal").click(function() {
             console.log("clickTotalworks");
+            checkButtons();
             setStyle("TotalAvg")
         })
     });
