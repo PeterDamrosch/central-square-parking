@@ -109,6 +109,13 @@ var colors7 = {
 
 }
 
+var colors8 = {
+    "good": "#8e44ad",
+    "medium": "#2980b9",
+    "bad": "#c0392b"
+
+}
+
 var mainColor = colors1;
 
 // colors that are a little light perhaps
