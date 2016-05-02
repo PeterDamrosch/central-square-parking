@@ -16,6 +16,20 @@ var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x
     attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 });
 
+var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
+});
+
+var Thunderforest_Landscape = L.tileLayer('http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+});
+
+var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+});
 
 // Initialize map
 
@@ -30,8 +44,13 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
 var baseLayers = {
     "Streets": CartoDB_Positron,
     "Satellite": Esri_WorldImagery,
-    "Hydda": Hydda_Full
+    "Hydda": Hydda_Full,
+    "HOT": OpenStreetMap_HOT,
+    "Landscape": Thunderforest_Landscape,
+    "Carto Dark": CartoDB_DarkMatter
 };
+
+
 
 // Toggle baselayers - Good tutorial that explains this on leafletjs.com
 L.control.layers(baseLayers, null, {position: 'topleft'}).addTo(map);
@@ -63,12 +82,34 @@ var colors3 = {
 }
 
 var colors4 = {
-    "good": "#1abc9c",
-    "medium": "#9b59b6",
-    "bad": "#e74c3c"
+    "good": "#27ae60",
+    "medium": "#8e44ad",
+    "bad": "#c0392b"
 }
 
-var mainColor = colors4;
+// blue purple red
+var colors5 = {
+    "good": "#3498db",
+    "medium": "#8e44ad",
+    "bad": "#c0392b"
+}
+
+// color brewer
+var colors6 = {
+    "good": "#4daf4a",
+    "medium": "#377eb8",
+    "bad": "#e41a1c"
+
+}
+// colors7 - yellows to blue
+var colors7 = {
+    "good": "#8e44ad",
+    "medium": "#2980b9",
+    "bad": "#c0392b"
+
+}
+
+var mainColor = colors1;
 
 // colors that are a little light perhaps
 var colorsA = {
@@ -94,7 +135,32 @@ var colorsB = {
     "8": '#f781bf'
 }
 
-var regColors = colorsB
+// third set, flatcolors ui
+/*
+var colorsC = {
+    "1": '#1abc9c', done tiel
+    "2": '#3498db', DONE - blue
+    "3": '#34495e', done - dark blue
+    "4": '#9b59b6', done - purple
+    "5": '#f1c40f', DONE - yellow
+    "6": '#e74c3c',
+    "7": '#7f8c8d',
+    "8": '#27ae60'
+}
+*/
+
+var colorsD = {
+    "1": '#3498db',
+    "2": '#f1c40f',
+    "3": '#9b59b6',
+    "4": '#d35400',
+    "5": '#1abc9c',
+    "6": '#c0392b',
+    "7": '#34495e',
+    "8": '#27ae60'
+}
+
+var regColors = colorsD
 
 
 function createMap(data) {
@@ -207,10 +273,10 @@ function createMap(data) {
         div.innerHTML += '<i style="background: '+regColors["3"] +'"></i><p>2hr 8am-6pm</p>';
         div.innerHTML += '<i style="background: '+regColors["4"] +'"></i><p>30min 8am-6pm</p>';
         div.innerHTML += '<i style="background: '+regColors["6"] +'"></i><p>2hr 9am-5pm</p>';
-        div.innerHTML += '<i style="background: '+regColors["2"] +'"></i><p>2hr 8am-6pm. Mon: 9am to 5pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["2"] +'"></i><p>2hr 8am-6pm, Mon: 9am to 5pm</p>';
         div.innerHTML += '<i style="background: '+regColors["5"] +'"></i><p>$1 2hr 8am-6pm, $2 4hr 6-10pm</p>';
         div.innerHTML += '<i style="background: '+regColors["7"] +'"></i><p>$1 8am-6pm 4hr, $2 6-10pm 4hr</p>';
-        div.innerHTML += '<i style="background: '+regColors["8"] +'"></i><p>Green Street</p>';
+        div.innerHTML += '<i style="background: '+regColors["8"] +'"></i><p>$1.50, no time restrictions</p>';
 
         // Return the Legend div containing the HTML content
         return div;
