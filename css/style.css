@@ -82,12 +82,14 @@ path {
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
+    width: 250px;
 }
 
 #title{
     line-height: 18px;
     text-align: center;
-    margin: 2px 0px
+    margin: 2px 0px;
+    padding: 0px 5px
 }
 
 .subtitle {
@@ -123,5 +125,8 @@ path {
     stroke: brown
 }
 
+label {
+    margin-left: 5px;
+}
 
 

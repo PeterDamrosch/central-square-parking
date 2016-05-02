@@ -68,7 +68,33 @@ var colors4 = {
     "bad": "#e74c3c"
 }
 
-var mainColor = colors1;
+var mainColor = colors4;
+
+// colors that are a little light perhaps
+var colorsA = {
+    "1": "#1f78b4",
+    "2": "#a6cee3",
+    "3": "#b2df8a",
+    "4": "#33a02c",
+    "5": "#fb9a99",
+    "6": "#e31a1c",
+    "7": "#fdbf6f",
+    "8": "#ff7f00"
+}
+
+// second set of color brewer colors
+var colorsB = {
+    "1": '#e41a1c',
+    "2": '#377eb8',
+    "3": '#4daf4a',
+    "4": '#984ea3',
+    "5": '#ff7f00',
+    "6": '#ffff33',
+    "7": '#a65628',
+    "8": '#f781bf'
+}
+
+var regColors = colorsB
 
 
 function createMap(data) {
@@ -114,21 +140,43 @@ function createMap(data) {
         this.stream.point(point.x, point.y);
     }
 
+
     //Create a Legend - from Mike Foster's tutorial on DUSPviz
 
-    // Create Leaflet Control Object for Legend
-    var legend = L.control({position: 'topright'});
+    // Global Variables for jQuery to check to see if the legend is on the map
+    var legendOccupancyPresent = true;
+    var legendRegulationPresent = false;
 
-    // Function that runs when legend is added to map
-    legend.onAdd = function (map) {
+    // Create static part of the legend
+    var legendStatic = L.control({position: 'topright'});
+
+    // Create Leaflet Control Object for the Static Legend
+    var legend = L.control({position: 'topright'});
+    legendStatic.onAdd =function(map) {
+
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML += '<div id="title"><b>Central Square Parking Survey<br/><small>4/14-4/16</div>';
+        div.innerHTML += '<input type="radio" id="occupancy" name="radio" checked="checked"><label for="occupancy" class="buttons">Occupancy</label>';
+        div.innerHTML += '<input type="radio" id="regulations" name="radio"><label for="regulations" class="buttons">Regulations</label></b><br/>';
+
+        return div;
+    };
+
+    // Add Static Legend to Map
+    legendStatic.addTo(map);
+
+    // Create Occupancy Legend
+    var legendOccupancy = L.control({position: 'topright'});
+
+    // Function that runs when Occupancy Legend is added to map
+    legendOccupancy.onAdd = function (map) {
 
         // Create Div Element and Populate it with HTML
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<div id="title"><b>Central Square Parking Survey<br/><small>4/14-4/16</div>';
         div.innerHTML += 'Avg. occupancy<br/>';
-        div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
-        div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
-        div.innerHTML += '<i style="background: #E31B23"></i><p>> 90%</p>';
+        div.innerHTML += '<i style="background: '+mainColor.good +'"></i><p>< 75%</p>';
+        div.innerHTML += '<i style="background: '+mainColor.medium +'"></i><p>75-90%</p>';
+        div.innerHTML += '<i style="background: '+mainColor.bad +'"></i><p>> 90%</p>';
         div.innerHTML += '<div class="subtitle">Day</div>';
         div.innerHTML += '<input type="checkbox" id="checkThu" name="radio" checked="checked"><label for="checkThu" class="buttons">Thu</label>';
         div.innerHTML += '<input type="checkbox" id="checkFri" name="radio" checked="checked"><label for="checkFri" class="buttons">Fri</label>';
@@ -143,18 +191,42 @@ function createMap(data) {
         return div;
     };
 
-    // Add Legend to Map
-    legend.addTo(map);
+    // Add Occupancy Legend to Map
+    legendOccupancy.addTo(map);
+
+    // Create Regulations Legend
+    var legendRegulations = L.control({position: 'topright'});
+
+    // Function that runs when Occupancy Legend is added to map
+    legendRegulations.onAdd = function (map) {
+
+        // Create Div Element and Populate it with HTML
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML += 'Parking Regulations<br/>';
+        div.innerHTML += '<i style="background: '+regColors["1"] +'"></i><p>1hr 8am-6pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["3"] +'"></i><p>2hr 8am-6pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["4"] +'"></i><p>30min 8am-6pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["6"] +'"></i><p>2hr 9am-5pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["2"] +'"></i><p>2hr 8am-6pm. Mon: 9am to 5pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["5"] +'"></i><p>$1 2hr 8am-6pm, $2 4hr 6-10pm</p>';
+        div.innerHTML += '<i style="background: '+regColors["7"] +'"></i><p>$1 8am-6pm 4hr, $2 6-10pm 4hr</p>';
+        div.innerHTML += '<i style="background: '+regColors["8"] +'"></i><p>Green Street</p>';
+
+        // Return the Legend div containing the HTML content
+        return div;
+    };
+
 
     // Set Styling
 
-    function setStyle(timeList, dateList) {
+    function setOccupancyStyle(timeList, dateList) {
         // Get total number of passes from the days and times, for use in computing the average
         if (timeList.length == 0 || dateList.length == 0)
             return;
 
         var numberOfPasses = timeList.length * dateList.length;
 
+        // Take the previously defined (but un-unstyled d3 selection, "feature") and style it
         feature.style("fill", function (d) {
             var countableObservations = d.properties.Observations.filter(
                 function(e) {return timeList.indexOf(e.Time) > -1 && dateList.indexOf(e.Date) > -1}
@@ -176,12 +248,66 @@ function createMap(data) {
             }
         })
     }
-    setStyle([4,5,6,7],["Thursday", "Friday", "Saturday"]);
+
+    // Set initial style
+    setOccupancyStyle([4,5,6,7],["Thursday", "Friday", "Saturday"]);
+
+    // Regulation legend and style
+    function setRegulationStyle() {
+        feature.style("fill", function (d) {
+            return regColors[d.properties.Regulation]
+        })
+    }
+
+    // Function for jQuery to call to create the regulation legend
+    function createRegLegend() {
+        if (legendOccupancyPresent) {
+            // Remove occupancy legend
+            legendOccupancy.removeFrom(map);
+            legendOccupancyPresent = false;
+
+            // Add regulation legend to Map
+            legendRegulations.addTo(map);
+            legendRegulationsPresent = true;
+
+            // Restyle map based on regulations
+            setRegulationStyle()
+        }
+    }
+
+    // Function for jQuery to call to recreate the occupancy legend
+    function createOccLegend() {
+        if (legendRegulationsPresent) {
+            // Remove occupancy legend
+            legendRegulations.removeFrom(map);
+            legendRegulationsPresent = false;
+
+            // Add regulation legend to Map
+            legendOccupancy.addTo(map);
+            legendOccupancyPresent = true;
+
+            // Restyle map based on regulations
+            setOccupancyStyle([4,5,6,7],["Thursday", "Friday", "Saturday"])
+        }
+    }
+
 
     // JQuery Buttons
 
     $(document).ready(function(){
-        // Check button values
+        //
+        $("#regulations").click(function() {
+            createRegLegend();
+        });
+
+        // The jQuery click listeners for the days/hours seem to go quiet when occupancy is switched back to
+        // So I wrapped them in a function called addOccupanyListeners and that reactivates them
+        $("#occupancy").click(function() {
+            createOccLegend();
+            addOccupancyListeners();
+        });
+
+        // Check button values for occupancy
         function checkButtons() {
 
             // Add checked days to dateList
@@ -211,37 +337,43 @@ function createMap(data) {
             console.log(timeList);
 
             // Call setStyle with the checked timeList
-            setStyle(timeList, dateList)
+            setOccupancyStyle(timeList, dateList)
         }
 
-        // Call checkButtons each time a box is checked
-        $("#checkThu").click(function() {
-            checkButtons();
-        });
-        $("#checkFri").click(function() {
-            checkButtons();
-        });
-        $("#checkSat").click(function() {
-            checkButtons();
-        });
-        $("#check4").click(function() {
-            checkButtons();
-        });
-        $("#check5").click(function() {
-            checkButtons();
-        });
-        $("#check6").click(function() {
-            checkButtons();
-        });
-        $("#check7").click(function() {
-            checkButtons();
-        })
+        // Function to add the hr/day button listeners
+        function addOccupancyListeners() {
+            // Call checkButtons each time a box is checked
+            $("#checkThu").click(function() {
+                checkButtons();
+            });
+            $("#checkFri").click(function() {
+                checkButtons();
+            });
+            $("#checkSat").click(function() {
+                checkButtons();
+            });
+            $("#check4").click(function() {
+                checkButtons();
+            });
+            $("#check5").click(function() {
+                checkButtons();
+            });
+            $("#check6").click(function() {
+                checkButtons();
+            });
+            $("#check7").click(function() {
+                checkButtons();
+            })
+        }
+        // Call it by default, and then again each time occupancy is switched back to
+        addOccupancyListeners()
+
     });
 }
 
 // Load CSV
 
-d3.json("data/Results4_JSON.json", function(error, meterCount) {
+d3.csv("data/Results5_CSV.csv", function(error, meterCount) {
     if (error) throw error;
     for (i=0; i < meterCount.length; i++) {
         meterCount[i].Cars = +meterCount[i].Cars;
@@ -252,7 +384,7 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
 
     // Load block shapes GeoJSON
 
-    d3.json("data/MeteredBlocks4_GEOJSON.geojson", function(error, dataset) {
+    d3.json("data/MeterBlocks14_GEOJSON.geojson", function(error, dataset) {
         if (error) throw error;
 
         // Add count data to the GeoJSON
