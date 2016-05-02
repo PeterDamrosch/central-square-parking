@@ -123,5 +123,8 @@ path {
     stroke: brown
 }
 
+label {
+    margin-left: 3px;
+}
 
 

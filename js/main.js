@@ -116,8 +116,18 @@ function createMap(data) {
 
     //Create a Legend - from Mike Foster's tutorial on DUSPviz
 
+    // Create static part of the legend
+    var legendStatic = L.control({position: 'topright'});
+
     // Create Leaflet Control Object for Legend
     var legend = L.control({position: 'topright'});
+    legendStatic.onAdd =function(map) {
+
+        return div;
+    };
+
+    // Add Legend to Map
+    legend.addTo(map);
 
     // Function that runs when legend is added to map
     legend.onAdd = function (map) {
@@ -125,6 +135,8 @@ function createMap(data) {
         // Create Div Element and Populate it with HTML
         var div = L.DomUtil.create('div', 'legend');
         div.innerHTML += '<div id="title"><b>Central Square Parking Survey<br/><small>4/14-4/16</div>';
+        div.innerHTML += '<input type="radio" id="occupied" name="radio" checked="checked"><label for="avg" class="buttons"> Avg. occupancy</label>';
+        div.innerHTML += '<input type="radio" id="regulations" name="radio"><label for="regulations" class="buttons"> Regulations</label></b><br/>';
         div.innerHTML += 'Avg. occupancy<br/>';
         div.innerHTML += '<i style="background: #00853F"></i><p>< 75%</p>';
         div.innerHTML += '<i style="background: #FDEF42"></i><p>75-90%</p>';
@@ -241,7 +253,7 @@ function createMap(data) {
 
 // Load CSV
 
-d3.json("data/Results4_JSON.json", function(error, meterCount) {
+d3.csv("data/Results5_CSV.csv", function(error, meterCount) {
     if (error) throw error;
     for (i=0; i < meterCount.length; i++) {
         meterCount[i].Cars = +meterCount[i].Cars;
@@ -252,7 +264,7 @@ d3.json("data/Results4_JSON.json", function(error, meterCount) {
 
     // Load block shapes GeoJSON
 
-    d3.json("data/MeteredBlocks4_GEOJSON.geojson", function(error, dataset) {
+    d3.json("data/MeterBlocks14_GEOJSON.geojson", function(error, dataset) {
         if (error) throw error;
 
         // Add count data to the GeoJSON
