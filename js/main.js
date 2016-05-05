@@ -116,7 +116,15 @@ var colors8 = {
 
 }
 
-var mainColor = colors1;
+// Blue, Purple, Red
+var colors9 = {
+    "good": "#021893",
+    "medium": "#740699",
+    "bad": "#B70B0B"
+
+}
+
+var mainColor = colors5;
 
 // colors that are a little light perhaps
 var colorsA = {
