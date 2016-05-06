@@ -46,7 +46,7 @@ var colors1 = {
 var colors5 = {
     "good": "#3498db",
     "medium": "#8e44ad",
-    "bad": "#c0392b"
+    "bad": "#e74c3c"
 };
 
 var mainColor = colors5;
@@ -57,7 +57,7 @@ var colorsD = {
     "3": '#9b59b6',
     "4": '#d35400',
     "5": '#1abc9c',
-    "6": '#c0392b',
+    "6": '#e74c3c',
     "7": '#34495e',
     "8": '#27ae60'
 }
