@@ -2,33 +2,12 @@
 
 // Base layers
 
-var CartoDB_Positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-    subdomains: 'abcd',
-    maxZoom: 21
-});
-
 var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 });
 
 var Hydda_Full = L.tileLayer('http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png', {
     attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-});
-
-var OpenStreetMap_HOT = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles courtesy of <a href="http://hot.openstreetmap.org/" target="_blank">Humanitarian OpenStreetMap Team</a>'
-});
-
-var Thunderforest_Landscape = L.tileLayer('http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-});
-
-var CartoDB_DarkMatter = L.tileLayer('http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
-    subdomains: 'abcd',
-    maxZoom: 19
 });
 
 // Initialize map
@@ -42,15 +21,9 @@ var svg = d3.select(map.getPanes().overlayPane).append("svg"),
 
 // Baselayer control for map
 var baseLayers = {
-    "Streets": CartoDB_Positron,
-    "Satellite": Esri_WorldImagery,
-    "Hydda": Hydda_Full,
-    "HOT": OpenStreetMap_HOT,
-    "Landscape": Thunderforest_Landscape,
-    "Carto Dark": CartoDB_DarkMatter
+    "Streets": Hydda_Full,
+    "Satellite": Esri_WorldImagery
 };
-
-
 
 // Toggle baselayers - Good tutorial that explains this on leafletjs.com
 L.control.layers(baseLayers, null, {position: 'topleft'}).addTo(map);
@@ -67,102 +40,16 @@ var colors1 = {
     "good": "#00853F",
     "medium": "#FDEF42",
     "bad": "#E31B23"
-}
-
-var colors2 = {
-    "good": "#8c96c6",
-    "medium": "#88419d",
-    "bad": "#4d004b"
-}
-
-var colors3 = {
-    "good": "#02B24B",
-    "medium": "9400FF",
-    "bad": "FFAA19"
-}
-
-var colors4 = {
-    "good": "#27ae60",
-    "medium": "#8e44ad",
-    "bad": "#c0392b"
-}
+};
 
 // blue purple red
 var colors5 = {
     "good": "#3498db",
     "medium": "#8e44ad",
     "bad": "#c0392b"
-}
-
-// color brewer
-var colors6 = {
-    "good": "#4daf4a",
-    "medium": "#377eb8",
-    "bad": "#e41a1c"
-
-}
-// colors7 - yellows to blue
-var colors7 = {
-    "good": "#8e44ad",
-    "medium": "#2980b9",
-    "bad": "#c0392b"
-
-}
-
-var colors8 = {
-    "good": "#8e44ad",
-    "medium": "#2980b9",
-    "bad": "#c0392b"
-
-}
-
-// Blue, Purple, Red
-var colors9 = {
-    "good": "#021893",
-    "medium": "#740699",
-    "bad": "#B70B0B"
-
-}
+};
 
 var mainColor = colors5;
-
-// colors that are a little light perhaps
-var colorsA = {
-    "1": "#1f78b4",
-    "2": "#a6cee3",
-    "3": "#b2df8a",
-    "4": "#33a02c",
-    "5": "#fb9a99",
-    "6": "#e31a1c",
-    "7": "#fdbf6f",
-    "8": "#ff7f00"
-}
-
-// second set of color brewer colors
-var colorsB = {
-    "1": '#e41a1c',
-    "2": '#377eb8',
-    "3": '#4daf4a',
-    "4": '#984ea3',
-    "5": '#ff7f00',
-    "6": '#ffff33',
-    "7": '#a65628',
-    "8": '#f781bf'
-}
-
-// third set, flatcolors ui
-/*
-var colorsC = {
-    "1": '#1abc9c', done tiel
-    "2": '#3498db', DONE - blue
-    "3": '#34495e', done - dark blue
-    "4": '#9b59b6', done - purple
-    "5": '#f1c40f', DONE - yellow
-    "6": '#e74c3c',
-    "7": '#7f8c8d',
-    "8": '#27ae60'
-}
-*/
 
 var colorsD = {
     "1": '#3498db',
@@ -175,8 +62,7 @@ var colorsD = {
     "8": '#27ae60'
 }
 
-var regColors = colorsD
-
+var regColors = colorsD;
 
 function createMap(data) {
 
@@ -236,7 +122,7 @@ function createMap(data) {
     legendStatic.onAdd =function(map) {
 
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<div id="title"><b>Central Square Parking Survey<br/><small>4/14-4/16</div>';
+        div.innerHTML += '<div id="title"><b>Central Square Parking Study<br/><small>4/14-4/16</div>';
         div.innerHTML += '<input type="radio" id="occupancy" name="radio" checked="checked"><label for="occupancy" class="buttons">Occupancy</label>';
         div.innerHTML += '<input type="radio" id="regulations" name="radio"><label for="regulations" class="buttons">Regulations</label></b><br/>';
 
